@@ -9,25 +9,23 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.tiledmapstest.OrthogonalTiledMapRendererWithObjects;
 import com.tiledmapstest.TiledMapsTest;
 import com.tiledmapstest.actors.TestActor;
-
-//TODO: customized renderer to render object layers
 
 public class MapScreen extends BaseScreen {
 
     TiledMap tiledMap;
     OrthographicCamera camera;
-    TiledMapRenderer renderer;
+    OrthogonalTiledMapRendererWithObjects renderer;
+    //TiledMapRenderer renderer;
     MapProperties mapProperties;
     int tiledMapWidth, tiledMapHeight, tiledLayerWidth, tiledLayerHeight;
     Vector3 mapCenter;
@@ -49,7 +47,8 @@ public class MapScreen extends BaseScreen {
         spriteBatch = new SpriteBatch();
 
         tiledMap = new TmxMapLoader().load("map2/android4.tmx");
-        renderer = new OrthogonalTiledMapRenderer(tiledMap);
+        //renderer = new OrthogonalTiledMapRenderer(tiledMap);
+        renderer = new OrthogonalTiledMapRendererWithObjects(tiledMap);
         mapProperties = tiledMap.getProperties();
 
         testTexture = new Texture("badlogic.jpg");
@@ -91,6 +90,12 @@ public class MapScreen extends BaseScreen {
 
         Gdx.input.setInputProcessor(stage);
         stage.addListener(new InputListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                testActor.setPosition(x, y);
+                return true;
+            }
+
             @Override
             public boolean keyUp(InputEvent event, int keycode) {
                 if(keycode == Input.Keys.LEFT && camera.position.x > 0)
@@ -134,6 +139,7 @@ public class MapScreen extends BaseScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();
+
         renderer.setView(camera);
         renderer.render();
 
