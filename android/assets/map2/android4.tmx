@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="1.4.1" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="7">
+ <tileset firstgid="1" source="mixed.tsx"/>
+ <layer id="1" name="water" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYmBgYBrFo3gUj+JRPIpJxADRBwMh
+  </data>
+ </layer>
+ <layer id="2" name="grass" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFtAIsODA1zSLX3MFuHiEzR8EoGAUDDwCnDgCh
+  </data>
+ </layer>
+ <layer id="3" name="dirt" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFIMBMAJNjFjF2EWveSFNHSC2p8UIofkmN41EwCkYBAwMAmmsAYQ==
+  </data>
+ </layer>
+ <objectgroup id="5" name="objects">
+  <object id="1" gid="1" x="64" y="160" width="32" height="32"/>
+  <object id="2" gid="1" x="64" y="128" width="32" height="32"/>
+  <object id="3" gid="1" x="96" y="128" width="32" height="32"/>
+  <object id="4" gid="1" x="96" y="160" width="32" height="32"/>
+  <object id="5" gid="1" x="384" y="224" width="32" height="32"/>
+  <object id="6" gid="1" x="384" y="256" width="32" height="32"/>
+ </objectgroup>
+</map>

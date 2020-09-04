@@ -21,6 +21,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.tiledmapstest.TiledMapsTest;
 import com.tiledmapstest.actors.TestActor;
 
+//TODO: customized renderer to render object layers
+
 public class MapScreen extends BaseScreen {
 
     TiledMap tiledMap;
@@ -46,7 +48,7 @@ public class MapScreen extends BaseScreen {
 
         spriteBatch = new SpriteBatch();
 
-        tiledMap = new TmxMapLoader().load("androidTest.tmx");
+        tiledMap = new TmxMapLoader().load("map2/android4.tmx");
         renderer = new OrthogonalTiledMapRenderer(tiledMap);
         mapProperties = tiledMap.getProperties();
 
