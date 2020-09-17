@@ -20,21 +20,23 @@ import com.tiledmapstest.OrthogonalTiledMapRendererWithObjects;
 import com.tiledmapstest.TiledMapsTest;
 import com.tiledmapstest.actors.TestActor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MapScreen extends BaseScreen {
 
     TiledMap tiledMap;
     OrthographicCamera camera;
     OrthogonalTiledMapRendererWithObjects renderer;
-    //TiledMapRenderer renderer;
     MapProperties mapProperties;
     int tiledMapWidth, tiledMapHeight, tiledLayerWidth, tiledLayerHeight;
     Vector3 mapCenter;
     Stage stage;
     Texture testTexture;
-    Sprite testSprite;
+    Sprite testSprite, testSprite2;
     TestActor testActor;
-    SpriteBatch spriteBatch;
     ScreenViewport viewport;
+    List<Sprite> testArray;
 
     public MapScreen(TiledMapsTest game) {
         super(game);
@@ -44,10 +46,7 @@ public class MapScreen extends BaseScreen {
     public void show() {
         // -----------> GRAPHICAL ELEMENTS AND PROPERTIES <--- START
 
-        spriteBatch = new SpriteBatch();
-
         tiledMap = new TmxMapLoader().load("map2/android4.tmx");
-        //renderer = new OrthogonalTiledMapRenderer(tiledMap);
         renderer = new OrthogonalTiledMapRendererWithObjects(tiledMap);
         mapProperties = tiledMap.getProperties();
 
@@ -56,6 +55,11 @@ public class MapScreen extends BaseScreen {
         testActor = new TestActor(testSprite);
         testActor.setSizeX(300f);
         testActor.setSizeY(300f);
+
+        testArray = new ArrayList<Sprite>();
+        testArray.add(testSprite);
+        for (Sprite sprite : testArray)
+            testArray.clear();
 
         // below, the property "width" is the number of tiles, instead "tilewidth" is the width of the tiles in pixel
         // same goes for "height" and "tileheight"
@@ -72,7 +76,6 @@ public class MapScreen extends BaseScreen {
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.zoom = 1.5f;
-        //camera.setToOrtho(false, tiledLayerWidth, tiledLayerHeight);
 
         viewport = new ScreenViewport(camera);
 
@@ -84,6 +87,16 @@ public class MapScreen extends BaseScreen {
 
         stage.addActor(testActor);
 
+        testSprite.setSize(600, 600);
+        renderer.addSprite(testSprite);
+
+        testSprite2 = new Sprite(testTexture);
+        testSprite2.setSize(100, 50);
+        testSprite2.setPosition(tiledLayerWidth/2f -500, tiledLayerHeight/2f);
+        renderer.addSprite(testSprite2);
+
+        renderer.cloneList();
+
         // -----------> CAMERA, VIEWPORT AND STAGE <--- END
 
         // -----------> INPUT <--- BEGIN
@@ -93,6 +106,12 @@ public class MapScreen extends BaseScreen {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 testActor.setPosition(x, y);
+                testSprite2.setPosition(testActor.getX() -500, testActor.getY());
+                //DEPENDING ON WHERE THE ACTOR IS, SHOWS OR HIDES CERTAIN SPRITES (IN THIS CASE ALL OF THEM)
+                if (testActor.getX()>tiledLayerWidth/2f)
+                    renderer.removeAllSprites();
+                else
+                    renderer.clonedListToOriginal();
                 return true;
             }
 
@@ -143,13 +162,15 @@ public class MapScreen extends BaseScreen {
         renderer.setView(camera);
         renderer.render();
 
-        spriteBatch.setProjectionMatrix(camera.combined);
-        spriteBatch.begin();
-        testSprite.draw(spriteBatch);
-        spriteBatch.end();
+        //DEPENDING ON WHERE THE ACTOR IS, SHOWS OR HIDES CERTAIN SPRITES (IN THIS CASE ALL OF THEM)
+        if (testActor.getX()>tiledLayerWidth/2f)
+            renderer.removeAllSprites();
+        else
+            renderer.clonedListToOriginal();
 
         stage.act();
         stage.draw();
+
     }
 
     @Override
@@ -157,7 +178,5 @@ public class MapScreen extends BaseScreen {
         stage.dispose();
         tiledMap.dispose();
         testTexture.dispose();
-        spriteBatch.dispose();
-
     }
 }

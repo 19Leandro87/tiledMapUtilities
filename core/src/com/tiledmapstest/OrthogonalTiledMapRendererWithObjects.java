@@ -13,16 +13,32 @@ import java.util.List;
 public class OrthogonalTiledMapRendererWithObjects extends OrthogonalTiledMapRenderer {
 
     private Sprite sprite;
-    private List<Sprite> sprites;
+    private List<Sprite> sprites, spritesClone;
     private int drawSpritesAfterLayer = 1;
 
     public OrthogonalTiledMapRendererWithObjects(TiledMap map) {
         super(map);
         sprites = new ArrayList<Sprite>();
     }
+
     public void addSprite(Sprite sprite){
         sprites.add(sprite);
     }
+
+    public void removeAllSprites(){
+        sprites.clear();
+    }
+
+    //CLONES ALL THE FRAMES IN THE ORIGINAL LIST INTO A CLONED TEMP LIST
+    public void cloneList(){
+        spritesClone = new ArrayList<Sprite>(sprites);
+    }
+
+    //REPLACES THE ORIGINAL LIST (eventually modified or wiped etc.) WITH THE CLONED TEMP LIST
+    public void clonedListToOriginal(){
+        sprites = new ArrayList<Sprite>(spritesClone);
+    }
+
     @Override
     public void render() {
         beginRender();
