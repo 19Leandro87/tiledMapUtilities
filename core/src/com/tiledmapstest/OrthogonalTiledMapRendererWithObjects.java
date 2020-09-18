@@ -21,6 +21,14 @@ public class OrthogonalTiledMapRendererWithObjects extends OrthogonalTiledMapRen
         sprites = new ArrayList<Sprite>();
     }
 
+    public int getDrawSpritesAfterLayer() {
+        return drawSpritesAfterLayer;
+    }
+
+    public void setDrawSpritesAfterLayer(int drawSpritesAfterLayer) {
+        this.drawSpritesAfterLayer = drawSpritesAfterLayer;
+    }
+
     public void addSprite(Sprite sprite){
         sprites.add(sprite);
     }
@@ -39,7 +47,15 @@ public class OrthogonalTiledMapRendererWithObjects extends OrthogonalTiledMapRen
         sprites = new ArrayList<Sprite>(spritesClone);
     }
 
-    @Override
+    public List<Sprite> getSprites() {
+        return sprites;
+    }
+
+    public List<Sprite> getSpritesClone() {
+        return spritesClone;
+    }
+
+  /*  @Override
     public void render() {
         beginRender();
         int currentLayer = 0;
@@ -60,7 +76,7 @@ public class OrthogonalTiledMapRendererWithObjects extends OrthogonalTiledMapRen
             }
         }
         endRender();
-    }
+    }*/
 
 
     //THIS IS THE METHOD THAT RENDERS OBJECTS

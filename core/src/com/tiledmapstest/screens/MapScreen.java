@@ -1,5 +1,6 @@
 package com.tiledmapstest.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -23,6 +25,8 @@ import com.tiledmapstest.actors.TestActor;
 import java.util.ArrayList;
 import java.util.List;
 
+import sun.rmi.runtime.Log;
+
 public class MapScreen extends BaseScreen {
 
     TiledMap tiledMap;
@@ -36,16 +40,15 @@ public class MapScreen extends BaseScreen {
     Sprite testSprite, testSprite2;
     TestActor testActor;
     ScreenViewport viewport;
-    List<Sprite> testArray;
+    List<Sprite> spritesArray;
+    int [] layers;
 
     public MapScreen(TiledMapsTest game) {
         super(game);
     }
-
     @Override
     public void show() {
         // -----------> GRAPHICAL ELEMENTS AND PROPERTIES <--- START
-
         tiledMap = new TmxMapLoader().load("map2/android4.tmx");
         renderer = new OrthogonalTiledMapRendererWithObjects(tiledMap);
         mapProperties = tiledMap.getProperties();
@@ -55,11 +58,6 @@ public class MapScreen extends BaseScreen {
         testActor = new TestActor(testSprite);
         testActor.setSizeX(300f);
         testActor.setSizeY(300f);
-
-        testArray = new ArrayList<Sprite>();
-        testArray.add(testSprite);
-        for (Sprite sprite : testArray)
-            testArray.clear();
 
         // below, the property "width" is the number of tiles, instead "tilewidth" is the width of the tiles in pixel
         // same goes for "height" and "tileheight"
@@ -95,7 +93,13 @@ public class MapScreen extends BaseScreen {
         testSprite2.setPosition(tiledLayerWidth/2f -500, tiledLayerHeight/2f);
         renderer.addSprite(testSprite2);
 
-        renderer.cloneList();
+        //When rendering an int array containing layer indexes, the first element in the array is in the background
+        // and the last is in the foreground
+        layers = new int[]{
+                tiledMap.getLayers().getIndex("dirt"),
+                tiledMap.getLayers().getIndex("grass"),
+                tiledMap.getLayers().getIndex("objects")
+        };
 
         // -----------> CAMERA, VIEWPORT AND STAGE <--- END
 
@@ -107,11 +111,11 @@ public class MapScreen extends BaseScreen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 testActor.setPosition(x, y);
                 testSprite2.setPosition(testActor.getX() -500, testActor.getY());
-                //DEPENDING ON WHERE THE ACTOR IS, SHOWS OR HIDES CERTAIN SPRITES (IN THIS CASE ALL OF THEM)
-                if (testActor.getX()>tiledLayerWidth/2f)
-                    renderer.removeAllSprites();
-                else
-                    renderer.clonedListToOriginal();
+                tiledMap.getLayers().get("objects");
+                if (testSprite2.getScaleX() < 6)
+                    testSprite2.setScale(testSprite2.getScaleX()*1.5f);
+
+                hideSprites();
                 return true;
             }
 
@@ -149,7 +153,6 @@ public class MapScreen extends BaseScreen {
                 return false;
             }
         });
-
     }
 
     @Override
@@ -160,17 +163,32 @@ public class MapScreen extends BaseScreen {
         camera.update();
 
         renderer.setView(camera);
-        renderer.render();
+        //renderer.render();
 
-        //DEPENDING ON WHERE THE ACTOR IS, SHOWS OR HIDES CERTAIN SPRITES (IN THIS CASE ALL OF THEM)
-        if (testActor.getX()>tiledLayerWidth/2f)
-            renderer.removeAllSprites();
-        else
-            renderer.clonedListToOriginal();
+        renderer.getBatch().begin();
+        testSprite2.draw(renderer.getBatch());
+        //renderer.renderTileLayer((TiledMapTileLayer) tiledMap.getLayers().get("dirt"));
+        //renderer.renderTileLayer((TiledMapTileLayer) tiledMap.getLayers().get("grass"));
+        renderer.getBatch().end();
+        renderer.render(layers);
+
+        hideSprites();
 
         stage.act();
         stage.draw();
 
+    }
+
+    //DEPENDING ON WHERE THE ACTOR IS, SHOWS OR HIDES CERTAIN SPRITES
+    public void hideSprites(){
+        if (testActor.getX()>tiledLayerWidth/2f)
+            testSprite.setAlpha(0f);
+        //or: renderer.getSprites().get(0).setAlpha(0f);
+        else
+            testSprite.setAlpha(1f);
+
+        //REFERRING DIRECTLY TO THE SPRITE IS THE SAME AS WRITING: renderer.getSprites().get(0);
+        //LOOKS LIKE WHEN YOU CHANGE THE PROPERTIES OF A SPRITE, THEY'RE UPDATED IN THE ARRAY EVEN IF YOU'RE CHANGING THEM AFTER ADDING IT
     }
 
     @Override
@@ -178,5 +196,8 @@ public class MapScreen extends BaseScreen {
         stage.dispose();
         tiledMap.dispose();
         testTexture.dispose();
+        renderer.dispose();
     }
+
 }
+
