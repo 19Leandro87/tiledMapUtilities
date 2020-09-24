@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.1" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="7">
+<map version="1.4" tiledversion="1.4.1" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="10" nextobjectid="7">
  <tileset firstgid="1" source="mixed.tsx"/>
  <layer id="8" name="empty" width="20" height="20">
   <data encoding="base64" compression="zlib">
@@ -19,6 +19,11 @@
  <layer id="3" name="dirt" width="20" height="20">
   <data encoding="base64" compression="zlib">
    eJxjYBgFIMBMAJNjFjF2EWveSFNHSC2p8UIofkmN41EwCkYBAwMAmmsAYQ==
+  </data>
+ </layer>
+ <layer id="9" name="hero" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIJRMApIBwAGQAAB
   </data>
  </layer>
  <objectgroup id="5" name="objects">

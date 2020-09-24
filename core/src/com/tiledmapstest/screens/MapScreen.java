@@ -14,9 +14,11 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.tiledmapstest.OrthogonalTiledMapRendererWithObjects;
 import com.tiledmapstest.TiledMapsTest;
@@ -36,12 +38,13 @@ public class MapScreen extends BaseScreen {
     int tiledMapWidth, tiledMapHeight, tiledLayerWidth, tiledLayerHeight;
     Vector3 mapCenter;
     Stage stage;
-    Texture testTexture;
-    Sprite testSprite, testSprite2;
-    TestActor testActor;
+    Texture testTexture, testTexture2;
+    Sprite testSprite, testSprite2, testSprite3;
+    TestActor testActor, testActor2, testActor3;
     ScreenViewport viewport;
-    List<Sprite> spritesArray;
+    Array<Actor> actors;
     int [] layers;
+    int origIndex, newIndex, tmpTiledIndex;
 
     public MapScreen(TiledMapsTest game) {
         super(game);
@@ -49,6 +52,9 @@ public class MapScreen extends BaseScreen {
     @Override
     public void show() {
         // -----------> GRAPHICAL ELEMENTS AND PROPERTIES <--- START
+        testTexture2 = new Texture("grassTileset1.jpg");
+        testSprite3 = new Sprite(testTexture2);
+
         tiledMap = new TmxMapLoader().load("map2/android4.tmx");
         renderer = new OrthogonalTiledMapRendererWithObjects(tiledMap);
         mapProperties = tiledMap.getProperties();
@@ -58,6 +64,16 @@ public class MapScreen extends BaseScreen {
         testActor = new TestActor(testSprite);
         testActor.setSizeX(300f);
         testActor.setSizeY(300f);
+
+        testActor2 = new TestActor(testSprite);
+        testActor2.setSizeX(300f);
+        testActor2.setSizeY(300f);
+
+        testActor3 = new TestActor(testSprite3);
+        testActor3.setSizeX(300f);
+        testActor3.setSizeY(300f);
+        testActor3.setPosition(-200f, -200f);
+        testActor3.setMovement(0f);
 
         // below, the property "width" is the number of tiles, instead "tilewidth" is the width of the tiles in pixel
         // same goes for "height" and "tileheight"
@@ -71,7 +87,6 @@ public class MapScreen extends BaseScreen {
         // -----------> GRAPHICAL ELEMENTS AND PROPERTIES <--- END
 
         // -----------> CAMERA, VIEWPORT AND STAGE <--- BEGIN
-
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.zoom = 1.5f;
 
@@ -82,8 +97,7 @@ public class MapScreen extends BaseScreen {
         //THE FOLLOWING SETS THE CAMERA POSITION IN THE CENTER OF THE "MAP LAYER"
         mapCenter = new Vector3(tiledLayerWidth/2f, tiledLayerHeight/2f, 0);
         camera.position.set(mapCenter);
-
-        stage.addActor(testActor);
+        testActor.setMovement(-2f);
 
         testSprite.setSize(600, 600);
         renderer.addSprite(testSprite);
@@ -101,6 +115,15 @@ public class MapScreen extends BaseScreen {
                 tiledMap.getLayers().getIndex("objects")
         };
 
+        stage.addActor(testActor);
+        stage.addActor(testActor2);
+        stage.addActor(testActor3);
+
+        actors = new Array<>();
+        actors.add(testActor);
+        actors.add(testActor2);
+        actors.add(testActor3);
+
         // -----------> CAMERA, VIEWPORT AND STAGE <--- END
 
         // -----------> INPUT <--- BEGIN
@@ -111,11 +134,11 @@ public class MapScreen extends BaseScreen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 testActor.setPosition(x, y);
                 testSprite2.setPosition(testActor.getX() -500, testActor.getY());
-                tiledMap.getLayers().get("objects");
                 if (testSprite2.getScaleX() < 6)
                     testSprite2.setScale(testSprite2.getScaleX()*1.5f);
 
-                hideSprites();
+                renderer.zIndexRendering(actors);
+
                 return true;
             }
 
@@ -150,6 +173,9 @@ public class MapScreen extends BaseScreen {
                 if(keycode == Input.Keys.Y)
                     System.out.println("x = " + camera.position.x + " y = " + camera.position.y + " zoom = " + camera.zoom);
 
+                if(keycode == Input.Keys.N)
+                    testActor.setPosition(testActor.getX(), testActor.getY()-100);
+
                 return false;
             }
         });
@@ -161,24 +187,25 @@ public class MapScreen extends BaseScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();
-
         renderer.setView(camera);
-        //renderer.render();
 
         renderer.getBatch().begin();
         testSprite2.draw(renderer.getBatch());
+        testSprite3.draw(renderer.getBatch());
         //renderer.renderTileLayer((TiledMapTileLayer) tiledMap.getLayers().get("dirt"));
         //renderer.renderTileLayer((TiledMapTileLayer) tiledMap.getLayers().get("grass"));
         renderer.getBatch().end();
-        renderer.render(layers);
-
-        hideSprites();
 
         stage.act();
         stage.draw();
 
+        renderer.render(layers);
+
+        renderer.zIndexRendering(actors);
+
     }
 
+    //(the following is not used in the code, it's just a possible way of hiding sprites, changing the alpha)
     //DEPENDING ON WHERE THE ACTOR IS, SHOWS OR HIDES CERTAIN SPRITES
     public void hideSprites(){
         if (testActor.getX()>tiledLayerWidth/2f)
@@ -197,6 +224,7 @@ public class MapScreen extends BaseScreen {
         tiledMap.dispose();
         testTexture.dispose();
         renderer.dispose();
+        testTexture2.dispose();
     }
 
 }

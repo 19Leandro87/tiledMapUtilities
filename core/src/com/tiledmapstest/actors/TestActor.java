@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 public class TestActor extends Actor {
 
     private Sprite sprite;
-    private float sizeX, sizeY;
+    private float sizeX, sizeY, movement = 1f;
 
     public void setSizeY(float sizeY) {
         this.sizeY = sizeY;
@@ -38,6 +38,10 @@ public class TestActor extends Actor {
 
     @Override
     public void act(float delta) {
-        this.setX(this.getX() - 1f);
+        this.setX(this.getX() - movement);
+    }
+
+    public void setMovement (float movement){
+        this.movement = movement;
     }
 }
